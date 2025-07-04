@@ -1,47 +1,53 @@
-name: CI/CD Pipeline for Self-Healing AI
+name: CI/CD Pipeline
 
+# This workflow runs on any push or pull request to the 'main' branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
+  # This job is named 'test-and-validate'
   test-and-validate:
-    runs-on: ubuntu-latest
-    
-    # Set environment variables for the entire job
+    runs-on: ubuntu-latest # Use a standard Linux environment
+
+    # Make the secrets you created available to the job
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       MONGO_URI: ${{ secrets.MONGO_URI }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Check out your code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      # Step 2: Set up the Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # Use the same Python version as your project
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt
-        
-    - name: Run Tests with Retry
-      # Edge Case Handled: CI/CD test flakiness.
-      # This uses a third-party action to retry a step.
-      # If tests fail once, it will try again up to 2 times.
-      uses: nick-invision/retry@v2
-      with:
-        timeout_seconds: 60
-        max_attempts: 2
-        command: pytest backend/tests/
+      # Step 3: Install all the necessary Python packages
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
 
-    # Optional: This step would trigger the deployment on Render
-    # We are using Render's auto-deploy, so this is just for illustration.
-    - name: Notify Render of new commit
-      if: github.event_name == 'push' && success()
-      run: |
-        echo "Tests passed. Render will now auto-deploy the latest commit."
+      # Step 4: Run the tests with retry logic
+      # This is a self-healing mechanism for flaky tests.
+      - name: Run Pytest with Retry
+        # This is a community action that retries a command on failure
+        uses: nick-invision/retry@v3
+        with:
+          # If the command fails, it will wait 10 seconds and try again.
+          timeout_seconds: 10
+          # It will attempt a maximum of 3 times.
+          max_attempts: 3
+          # The command to run is your test suite.
+          command: pytest backend/tests/
+
+      # This is just a notification step. The actual deployment is handled by Render.
+      - name: If tests pass, deployment will be triggered
+        if: success()
+        run: echo "✅ Tests passed. Render will now auto-deploy."
