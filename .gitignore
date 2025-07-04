@@ -1,0 +1,17 @@
+# Environment variables
+# This path is relative to the root, so it correctly targets the .env file
+backend/.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment folders
+.venv
+venv/
+env/
+
+# IDE and OS files
+.idea/
+.vscode/
+.DS_Store
