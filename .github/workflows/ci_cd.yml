@@ -1,5 +1,3 @@
-# File: .github/workflows/main.yml
-
 name: Project51 Self-Healing CI/CD
 
 on:
@@ -46,8 +44,8 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          # The --validate=false flag is added here to solve the certificate error
-          kubectl apply -f k8s/ --validate=false
+          # No extra flags needed now, the config handles it
+          kubectl apply -f k8s/
           echo "Waiting for deployment to complete..."
           kubectl rollout status deployment/project51-deployment --timeout=120s
 
@@ -73,5 +71,4 @@ jobs:
           LAST_GOOD_SHA=$(git rev-parse HEAD~1)
           LAST_GOOD_IMAGE="${{ secrets.DOCKER_USERNAME }}/project51:${LAST_GOOD_SHA}"
           echo "Rolling back to image: ${LAST_GOOD_IMAGE}"
-          # The --validate=false flag is also added here for the rollback command
-          kubectl set image deployment/project51-deployment project51-container=${LAST_GOOD_IMAGE} --record --validate=false
+          kubectl set image deployment/project51-deployment project51-container=${LAST_GOOD_IMAGE} --record
