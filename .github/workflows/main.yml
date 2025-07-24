@@ -1,0 +1,54 @@
+name: Project51 Self-Healing CI/CD
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-push:
+    # This job is unchanged and correct
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/project51:latest
+
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - uses: actions/checkout@v3
+
+      # Step 1: Set up the secure SSH tunnel
+      - name: Setup SSH Tunnel
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+      - run: |
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh -L 6443:localhost:6443 -fN ubuntu@${{ secrets.EC2_HOST }}
+
+      # Step 2: Set up kubectl using the tunnel
+      - name: Set up Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          sed -i 's/server: https:\/\/0.0.0.0:6443/server: https:\/\/127.0.0.1:6443/g' $HOME/.kube/config
+
+      # Step 3: Deploy the application
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
+          echo "Waiting for deployment to complete..."
+          kubectl rollout status deployment/project51-deployment --timeout=180s
