@@ -97,3 +97,4 @@ if st.session_state.last_response:
             })
             st.warning("Thanks for the feedback! It helps the system learn.")
             st.session_state.last_response = {} # Clear after feedback
+    #final check to ensure the last response is cleared
