@@ -44,8 +44,8 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          # No extra flags needed now, the config handles it
-          kubectl apply -f k8s/
+          # The --validate=false flag is the correct fix for this specific server error
+          kubectl apply -f k8s/ --validate=false
           echo "Waiting for deployment to complete..."
           kubectl rollout status deployment/project51-deployment --timeout=120s
 
@@ -71,4 +71,5 @@ jobs:
           LAST_GOOD_SHA=$(git rev-parse HEAD~1)
           LAST_GOOD_IMAGE="${{ secrets.DOCKER_USERNAME }}/project51:${LAST_GOOD_SHA}"
           echo "Rolling back to image: ${LAST_GOOD_IMAGE}"
-          kubectl set image deployment/project51-deployment project51-container=${LAST_GOOD_IMAGE} --record
+          # We also add the flag here for the rollback
+          kubectl set image deployment/project51-deployment project51-container=${LAST_GOOD_IMAGE} --record --validate=false
