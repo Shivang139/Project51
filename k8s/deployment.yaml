@@ -14,27 +14,28 @@ spec:
     spec:
       containers:
         - name: project51-container
-          image: DOCKER_IMAGE_PLACEHOLDER
-          imagePullPolicy: IfNotPresent
+          # IMPORTANT: Use your Docker Hub username here
+          image: shivang139/project51:latest
+          # This forces Kubernetes to always check for a new version of the 'latest' image
+          imagePullPolicy: Always
           ports:
             - containerPort: 8501
           livenessProbe:
             httpGet:
               path: /healthz
               port: 8081
-            initialDelaySeconds: 15
+            initialDelaySeconds: 30 # Increased for stability on startup
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /healthz
               port: 8081
-            initialDelaySeconds: 5
+            initialDelaySeconds: 15
             periodSeconds: 10
-          # --- Resource Constraints Added ---
           resources:
             requests:
-              cpu: "100m" # Guarantees 1/10th of a CPU core for scheduling
-              memory: "128Mi" # Guarantees 128 Mebibytes of RAM
+              cpu: "100m"
+              memory: "128Mi"
             limits:
-              cpu: "500m" # Limits usage to half a CPU core
-              memory: "512Mi" # Limits usage to 512 Mebibytes of RAM
+              cpu: "500m"
+              memory: "512Mi"
