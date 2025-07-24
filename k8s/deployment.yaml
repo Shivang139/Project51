@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project51-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: project51
+  template:
+    metadata:
+      labels:
+        app: project51
+    spec:
+      containers:
+        - name: project51-container
+          image: DOCKER_IMAGE_PLACEHOLDER
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          # --- Resource Constraints Added ---
+          resources:
+            requests:
+              cpu: "100m" # Guarantees 1/10th of a CPU core for scheduling
+              memory: "128Mi" # Guarantees 128 Mebibytes of RAM
+            limits:
+              cpu: "500m" # Limits usage to half a CPU core
+              memory: "512Mi" # Limits usage to 512 Mebibytes of RAM
