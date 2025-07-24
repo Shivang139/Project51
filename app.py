@@ -97,4 +97,4 @@ if st.session_state.last_response:
             })
             st.warning("Thanks for the feedback! It helps the system learn.")
             st.session_state.last_response = {} # Clear after feedback
-    #final check to ensure the last response is cleared
+    #docker image part is done by github action and kubernetes deployment part is done mannually and i also seted up one script which run every hour and do the same task
