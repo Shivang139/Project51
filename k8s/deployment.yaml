@@ -2,28 +2,36 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: project51-deployment
-  spec:
-    containers:
-      - name: project51-container
-        image: your-dockerhub-username/project51:latest
-        imagePullPolicy: Always
-        ports:
-          - containerPort: 8501
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 30
-          periodSeconds: 20
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 15
-          periodSeconds: 10
-        # --- FINAL CHANGE IS HERE ---
-        resources:
-          limits:
-            cpu: "500m"
-            memory: "512Mi"
-          # The 'requests' block has been completely removed.
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project51
+  template:
+    metadata:
+      labels:
+        app: project51
+    spec:
+      containers:
+        - name: project51-container
+          image: shivang139/project51:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8501
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
