@@ -1,3 +1,44 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: project51-deployment
+#   namespace: default
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: project51
+#   template:
+#     metadata:
+#       labels:
+#         app: project51
+#     spec:
+#       containers:
+#         - name: project51-container
+#           image: shivang139/project51:latest # I've put your username here
+#           imagePullPolicy: Always
+#           ports:
+#             - containerPort: 8501
+#           # --- FINAL TUNED PROBES ---
+#           livenessProbe:
+#             httpGet:
+#               path: /
+#               port: 8501
+#             initialDelaySeconds: 60 # Wait 60 seconds before first check
+#             periodSeconds: 20
+#             timeoutSeconds: 5 # Allow 5 seconds for a response
+#           readinessProbe:
+#             httpGet:
+#               path: /
+#               port: 8501
+#             initialDelaySeconds: 30 # Wait 30 seconds before first check
+#             periodSeconds: 10
+#             timeoutSeconds: 5 # Allow 5 seconds for a response
+#           resources:
+#             limits:
+#               cpu: "500m"
+#               memory: "256Mi"
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,25 +56,10 @@ spec:
     spec:
       containers:
         - name: project51-container
-          image: shivang139/project51:latest # I've put your username here
+          image: shivang139/project51:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8501
-          # --- FINAL TUNED PROBES ---
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8501
-            initialDelaySeconds: 60 # Wait 60 seconds before first check
-            periodSeconds: 20
-            timeoutSeconds: 5 # Allow 5 seconds for a response
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8501
-            initialDelaySeconds: 30 # Wait 30 seconds before first check
-            periodSeconds: 10
-            timeoutSeconds: 5 # Allow 5 seconds for a response
           resources:
             limits:
               cpu: "500m"

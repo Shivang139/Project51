@@ -1,23 +1,23 @@
-import threading
+# import threading
 import streamlit as st
-from flask import Flask
+# from flask import Flask
 import requests
 
-# --- Health Check Server ---
-# This runs a tiny Flask app in a separate thread to handle Kubernetes health checks.
-def run_health_check_server():
-    flask_app = Flask(__name__)
-    @flask_app.route('/healthz')
-    def health_check():
-        """Kubernetes health probe endpoint."""
-        return "OK", 200
-    # Run on port 8081, a different port from Streamlit
-    flask_app.run(host='0.0.0.0', port=8081)
+# # --- Health Check Server ---
+# # This runs a tiny Flask app in a separate thread to handle Kubernetes health checks.
+# def run_health_check_server():
+#     flask_app = Flask(__name__)
+#     @flask_app.route('/healthz')
+#     def health_check():
+#         """Kubernetes health probe endpoint."""
+#         return "OK", 200
+#     # Run on port 8081, a different port from Streamlit
+#     flask_app.run(host='0.0.0.0', port=8081)
 
-# Start the health check server in a daemon thread
-health_thread = threading.Thread(target=run_health_check_server, daemon=True)
-health_thread.start()
-# --- End of Health Check Server ---
+# # Start the health check server in a daemon thread
+# health_thread = threading.Thread(target=run_health_check_server, daemon=True)
+# health_thread.start()
+# # --- End of Health Check Server ---
 
 # --- Configuration ---
 # Replace with your actual Render API URL after deployment
