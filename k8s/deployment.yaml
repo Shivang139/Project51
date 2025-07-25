@@ -39,6 +39,32 @@
 #               cpu: "500m"
 #               memory: "256Mi"
 
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: project51-deployment
+#   namespace: default
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: project51
+#   template:
+#     metadata:
+#       labels:
+#         app: project51
+#     spec:
+#       containers:
+#         - name: project51-container
+#           image: shivang139/project51:latest # I've put your username here
+#           imagePullPolicy: Always
+#           ports:
+#             - containerPort: 8501
+#           resources:
+#             limits:
+#               cpu: "500m"
+#               memory: "256Mi"
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,7 +86,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8501
+          # --- FINAL CHANGE IS HERE ---
           resources:
             limits:
               cpu: "500m"
               memory: "256Mi"
+            # The 'requests' block has been completely removed.
