@@ -15,21 +15,22 @@ spec:
     spec:
       containers:
         - name: project51-container
-          image: shivang139/project51:latest
+          image: shivang139/project51:latest # I've put your username here
           imagePullPolicy: Always
           ports:
             - containerPort: 8501
+          # --- FINAL CHANGE IS HERE ---
           livenessProbe:
             httpGet:
-              path: /healthz
-              port: 8081
-            initialDelaySeconds: 30
+              path: / # Check the main Streamlit page
+              port: 8501 # Check the main Streamlit port
+            initialDelaySeconds: 45 # Give it more time to start
             periodSeconds: 20
           readinessProbe:
             httpGet:
-              path: /healthz
-              port: 8081
-            initialDelaySeconds: 15
+              path: / # Check the main Streamlit page
+              port: 8501 # Check the main Streamlit port
+            initialDelaySeconds: 20
             periodSeconds: 10
           resources:
             limits:
