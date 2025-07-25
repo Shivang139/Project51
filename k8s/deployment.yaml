@@ -19,19 +19,21 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8501
-          # --- FINAL CHANGE IS HERE ---
+          # --- FINAL TUNED PROBES ---
           livenessProbe:
             httpGet:
-              path: / # Check the main Streamlit page
-              port: 8501 # Check the main Streamlit port
-            initialDelaySeconds: 45 # Give it more time to start
+              path: /
+              port: 8501
+            initialDelaySeconds: 60 # Wait 60 seconds before first check
             periodSeconds: 20
+            timeoutSeconds: 5 # Allow 5 seconds for a response
           readinessProbe:
             httpGet:
-              path: / # Check the main Streamlit page
-              port: 8501 # Check the main Streamlit port
-            initialDelaySeconds: 20
+              path: /
+              port: 8501
+            initialDelaySeconds: 30 # Wait 30 seconds before first check
             periodSeconds: 10
+            timeoutSeconds: 5 # Allow 5 seconds for a response
           resources:
             limits:
               cpu: "500m"
